@@ -18,18 +18,19 @@ def zamien():
     with open ('xx.txt', 'r') as f:
         p = f.read()
         p = p.replace('\n', ' ')
-
-    with open('yy.txt', 'w') as f:
-        f.write(p)
+        lista = p.split()
+    return lista
 
 
 def wpisz():
-    lista1 = input('Lista nrki i kwoty (albo tylko 1 nr bez kwoty): ')
-    if lista1 == 'q':
+    with open ('xx.txt', 'r') as f:
+        p = f.read()
+        p = p.replace('\n', ' ')
+    if p == 'q':
         return
-    lista1 = lista1.replace('-', ' ').replace(';', ' ').replace('(', ' ').replace(')', ' ').replace('/', ' ')
-    print(lista1)
-    lista = [lista1.split()[i:i+2] for i in range(0, len(lista1.split()), 2)]
+    p = p.replace('-', ' ').replace(';', ' ').replace('(', ' ').replace(')', ' ').replace('/', ' ')
+    print(p)
+    lista = [p.split()[i:i+2] for i in range(0, len(p.split()), 2)]
     print(lista)
     print("5 sekund na zmianę okna") 
     t.sleep(5) 
