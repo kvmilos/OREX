@@ -14,14 +14,6 @@ def rozr():
     t.sleep(.4)
     pdi.keyUp('alt')
 
-def zamien():
-    with open ('xx.txt', 'r') as f:
-        p = f.read()
-        p = p.replace('\n', ' ')
-        lista = p.split()
-    return lista
-
-
 def wpisz():
     with open ('xx.txt', 'r') as f:
         p = f.read()
@@ -65,13 +57,11 @@ def trans(ile=None):
                 pdi.press('tab')
 
 def main():
-    co = input('Co? t/n/z \n')
+    co = input('Co? t/n \n')
     if co == 't':
         trans()
     elif co == 'n':
         wpisz()
-    elif co == 'z':
-        zamien()
     else:
         print('nie rozumiem')
     main()
