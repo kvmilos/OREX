@@ -304,7 +304,7 @@ def lista():
             r.clipboard_append(slownik(rez, dlugi = True))
             r.update()
             print(slownik(rez, dlugi = True))
-            print('nie ma takiego nr rez')
+            print('skopiowano do schowka')
     else:
         lista2 = [lista1.split()[i:i+2] for i in range(0, len(lista1.split()), 2)]
         print(lista2)
@@ -326,6 +326,7 @@ def lista():
                 pdi.press('down')
             if i == 0:
                 pdi.press('tab')
+    lista()
 
 
 def main():
