@@ -118,7 +118,7 @@ def bnp_wpis(plik, poz1, poz2):
         if started != None and index >= started + ile:
             break
         if poz1 not in skipniecie: 
-            if row[0] == start:
+            if row[0] == start and not started:
                 n = 1
                 started = index
             if n == 1:
