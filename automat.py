@@ -15,6 +15,37 @@ SANTANDER_PATTERN = r'(1\s*[01]\s*\d\s*\d\s*\d\s*\d\s*\d)(\b|\D)'
 SANTANDER_PATTERN2 = r'(1\s*[01]\s*(\d\s*){5})(\D)+((\d\s*){1,5}((\.|,)\d\d?)?)(\D|\b)'
 
 
+def przeksiegowanie(plik):
+    df = p.read_excel(plik)
+    print('5 sekund na zmianę okna')
+    t.sleep(5)
+    for i in range(len(df)):
+        pdi.press('enter')
+        t.sleep(0.05)
+        pdi.press('enter')
+        t.sleep(0.05)
+        pdi.press('enter')
+        t.sleep(0.05)
+        pdi.write(str(df['amount'][i]))
+        t.sleep(0.05)
+        pdi.press('enter')
+        t.sleep(0.05)
+        if df['from'][i] in get_dic():
+            pdi.write(slownik(df['from'][i], dlugi = True))
+        else:
+            pdi.write('139-5')
+        t.sleep(0.05)
+        rozr()
+        t.sleep(0.05)
+        pdi.press('enter')
+        t.sleep(0.05)
+        pdi.press('enter')
+        t.sleep(0.05)
+        pdi.write(slownik(df['to'][i], dlugi = True))
+        rozr()
+
+        
+
 def zamien_przelewy(plik):
     df = p.read_csv(plik, sep=',')
     df2 = p.DataFrame()
@@ -71,7 +102,7 @@ def bnp_plik(plik):
             if len(matches) == 1:
                 nr = matches[0].replace(" ", "")
                 if int(nr) in get_dic():
-                    f.write(str(slownik(nr)) + "<= " + nr + " | " + line2 + "\n")
+                    f.write(str(slownik(nr)) + "    <= " + nr + " | " + line2 + "\n")
                 else:
                     f.write("Trzeba utworzyć! " + "<= " + nr + " | " + line2 + "\n")
             elif len(matches) > 1:
@@ -332,6 +363,7 @@ def lista():
 def main():
     co = input('''Co chcesz zrobic?:
                
+    (p)rzeksiegowanie
     (z)amienic plik z Przelewy24
     (w)pisac plik z Przelewy24 do PK
     (f)vs
@@ -348,6 +380,9 @@ def main():
         zamien_przelewy(plik)
         if input('Czy chcesz od razu wpisać dane do PK? (t/n) \n') == 't':
             wpisz_przelewy(plik.replace('.csv', '_zmienione.csv'))
+    elif co == 'p':
+        plik = os.path.join('pk', input('Podaj nazwę pliku: \n'))
+        przeksiegowanie(plik)
     elif co == 'w':
         plik = os.path.join('Przelewy24', input('Podaj nazwę pliku: \n'))
         wpisz_przelewy(plik)
