@@ -4,13 +4,14 @@ import pydirectinput as pdi
 import time as t
 import re
 
-df = p.read_csv('https://raw.githubusercontent.com/kvmilos/OREX/main/kontrahenci.csv')
-dic = dict(zip(df['kod'], df['pozycja']))
-
 def get_dic():
+    df = p.read_csv('https://raw.githubusercontent.com/kvmilos/OREX/main/kontrahenci.csv')
+    dic = dict(zip(df['kod'], df['pozycja']))
     return dic
 
 def slownik(rez, dlugi=False) -> str:
+    df = p.read_csv('https://raw.githubusercontent.com/kvmilos/OREX/main/kontrahenci.csv')
+    dic = dict(zip(df['kod'], df['pozycja']))
     if not dlugi:
         if dic[int(rez)]:
             return str(dic[int(rez)])
