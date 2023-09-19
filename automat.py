@@ -1,4 +1,4 @@
-from pomocnicze import slownik, find_reservation, rozr, get_dic
+from pomocnicze import slownik, find_reservation, rozr
 import pandas as p
 import pydirectinput as pdi
 import time as t
@@ -13,7 +13,8 @@ BNP_PATTERN2 = r'(1\s*[01]\s*(\d\s*){5})(\D)+((\d\s*){1,5}(( ?\. ?|,)\d\d?)?)(\D
 SANTANDER_OPIS = r'\?20.*\n?.*\n?.*\n?.*\?\s*3\s*1'
 SANTANDER_PATTERN = r'(1\s*[01]\s*\d\s*\d\s*\d\s*\d\s*\d)(\b|\D)'
 SANTANDER_PATTERN2 = r'(1\s*[01]\s*(\d\s*){5})(\D)+((\d\s*){1,5}((\.|,)\d\d?)?)(\D|\b)'
-
+df = p.read_csv('https://raw.githubusercontent.com/kvmilos/OREX/main/kontrahenci.csv')
+dic = dict(zip(df['kod'], df['pozycja']))
 
 def przeksiegowanie(plik):
     df = p.read_excel(plik)
@@ -30,8 +31,8 @@ def przeksiegowanie(plik):
         t.sleep(0.05)
         pdi.press('enter')
         t.sleep(0.05)
-        if df['from'][i] in get_dic():
-            pdi.write(slownik(df['from'][i], dlugi = True))
+        if df['from'][i] in dic:
+            pdi.write(slownik(df['from'][i], dic, dlugi = True))
         else:
             pdi.write('139-5')
         t.sleep(0.05)
@@ -41,7 +42,7 @@ def przeksiegowanie(plik):
         t.sleep(0.05)
         pdi.press('enter')
         t.sleep(0.05)
-        pdi.write(slownik(df['to'][i], dlugi = True))
+        pdi.write(slownik(df['to'][i], dic, dlugi = True))
         rozr()
 
         
@@ -51,7 +52,7 @@ def zamien_przelewy(plik):
     df2 = p.DataFrame()
     df2['Kwota'] = df['Kwota']/100
     df2['Rezerwacja'] = df.apply(lambda x: find_reservation(x['Opis']), axis=1)
-    df2['Konto'] = df2.apply(lambda x: slownik(x['Rezerwacja'], dlugi = True), axis=1)
+    df2['Konto'] = df2.apply(lambda x: slownik(x['Rezerwacja'], dic, dlugi = True), axis=1)
     plik2 = plik.replace('.csv', '_zmienione.csv')
     df2.to_csv(plik2, index=False)
 
@@ -101,8 +102,8 @@ def bnp_plik(plik):
             matches = re.findall(PATTERN1, line2)
             if len(matches) == 1:
                 nr = matches[0].replace(" ", "")
-                if int(nr) in get_dic():
-                    f.write(str(slownik(nr)) + "    <= " + nr + " | " + line2 + "\n")
+                if int(nr) in dic:
+                    f.write(str(slownik(nr, dic)) + "    <= " + nr + " | " + line2 + "\n")
                 else:
                     f.write("Trzeba utworzyć! " + "<= " + nr + " | " + line2 + "\n")
             elif len(matches) > 1:
@@ -156,9 +157,9 @@ def bnp_wpis(plik, poz1, poz2):
                 print(index - started, started + ile, row, f'({index+1})')
                 if len(row) == 1:
                     if row[0] != 'N/A':
-                        if row[0] in get_dic():
+                        if row[0] in dic:
                             pdi.keyDown('space')
-                            pdi.write(slownik(row[0]))
+                            pdi.write(slownik(row[0], dic))
                             rozr()
                         pdi.press('down')
                     else:
@@ -180,7 +181,7 @@ def bnp_wpis(plik, poz1, poz2):
                         if i == 0:
                             for _ in range(7):
                                 pdi.press('backspace')
-                        pdi.write(slownik(minirow[0], dlugi = True))
+                        pdi.write(slownik(minirow[0], dic, dlugi = True))
                         if i != len(lista)-1:
                             pdi.press('enter')
                     for i in range(len(lista)-1):
@@ -216,8 +217,8 @@ def santander_plik(plik):
             matches = re.findall(PATTERN1, line2)
             if len(matches) == 1:
                 nr = matches[0].replace(" ", "")
-                if int(nr) in get_dic():
-                    f.write(str(slownik(nr)) + "<= " + nr + " | " + line2 + "\n")
+                if int(nr) in dic:
+                    f.write(str(slownik(nr, dic)) + "<= " + nr + " | " + line2 + "\n")
                 else:
                     f.write("Trzeba utworzyć! " + "<= " + nr + " | " + line2 + "\n")
             elif len(matches) > 1:
@@ -276,9 +277,9 @@ def santander_wpis(plik, poz1, poz2):
             if n == 1:
                 if len(row) == 1:
                     if row[0] != 'N/A':
-                        if row[0] in get_dic():
+                        if row[0] in dic:
                             pdi.keyDown('space')
-                            pdi.write(slownik(row[0]))
+                            pdi.write(slownik(row[0], dic))
                             rozr()
                         pdi.press('down')
                     else:
@@ -300,7 +301,7 @@ def santander_wpis(plik, poz1, poz2):
                         if i == 0:
                             for _ in range(7):
                                 pdi.press('backspace')
-                        pdi.write(slownik(minirow[0], dlugi = True))
+                        pdi.write(slownik(minirow[0], dic, dlugi = True))
                         if i != len(lista)-1:
                             pdi.press('enter')
                     for i in range(len(lista)-1):
@@ -328,13 +329,13 @@ def lista():
     print(lista1)
     if len(lista1.split()) == 1:
         rez = lista1.split()[0]
-        if int(rez) in get_dic():
+        if int(rez) in dic:
             r = Tk()
             r.withdraw()
             r.clipboard_clear()
-            r.clipboard_append(slownik(rez, dlugi = True))
+            r.clipboard_append(slownik(rez, dic,dlugi = True))
             r.update()
-            print(slownik(rez, dlugi = True))
+            print(slownik(rez, dic, dlugi = True))
             print('skopiowano do schowka')
     else:
         lista2 = [lista1.split()[i:i+2] for i in range(0, len(lista1.split()), 2)]
@@ -344,7 +345,7 @@ def lista():
         for i, row in enumerate(lista2): 
             pdi.write(str(row[1]))
             pdi.press('tab')
-            pdi.write(slownik(row[0], dlugi = True))
+            pdi.write(slownik(row[0], dic, dlugi = True))
             if i != len(lista2)-1:
                 pdi.press('enter')
         for i in range(len(lista2)-1):

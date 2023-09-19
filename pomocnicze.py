@@ -11,8 +11,7 @@ def get_dic():
     dic = dict(zip(df['kod'], df['pozycja']))
     return dic
 
-def slownik(rez, dlugi=False) -> str:
-    dic = get_dic()
+def slownik(rez, dic, dlugi=False) -> str:
     if not dlugi:
         if dic[int(rez)]:
             return str(dic[int(rez)])
