@@ -17,22 +17,23 @@ df = p.read_csv('https://raw.githubusercontent.com/kvmilos/OREX/main/kontrahenci
 dic = dict(zip(df['kod'], df['pozycja']))
 
 def przeksiegowanie(plik):
-    df = p.read_excel(plik)
+    print(dic[1147720])
+    df2 = p.read_excel(plik)
     print('5 sekund na zmianę okna')
     t.sleep(5)
-    for i in range(len(df)):
+    for i in range(len(df2)):
         pdi.press('enter')
         t.sleep(0.05)
         pdi.press('enter')
         t.sleep(0.05)
         pdi.press('enter')
         t.sleep(0.05)
-        pdi.write(str(df['amount'][i]))
+        pdi.write(str(df2['amount'][i]))
         t.sleep(0.05)
         pdi.press('enter')
         t.sleep(0.05)
-        if df['from'][i] in dic:
-            pdi.write(slownik(df['from'][i], dic, dlugi = True))
+        if df2['from'][i] in dic:
+            pdi.write(slownik(df2['from'][i], dic, dlugi = True))
         else:
             pdi.write('139-5')
         t.sleep(0.05)
@@ -42,7 +43,7 @@ def przeksiegowanie(plik):
         t.sleep(0.05)
         pdi.press('enter')
         t.sleep(0.05)
-        pdi.write(slownik(df['to'][i], dic, dlugi = True))
+        pdi.write(slownik(df2['to'][i], dic, dlugi = True))
         rozr()
 
         
