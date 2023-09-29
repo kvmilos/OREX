@@ -17,7 +17,6 @@ df = p.read_csv('https://raw.githubusercontent.com/kvmilos/OREX/main/kontrahenci
 dic = dict(zip(df['kod'], df['pozycja']))
 
 def przeksiegowanie(plik):
-    print(dic[1147720])
     df2 = p.read_excel(plik)
     print('5 sekund na zmianę okna')
     t.sleep(5)
