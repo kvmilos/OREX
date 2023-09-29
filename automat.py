@@ -8,7 +8,7 @@ from tkinter import Tk
 
 BNP_OPIS = r'\^20.*\n?.*\n?.*\n?.*\^32'
 PATTERN1 = r'(1 *[01] *\d *\d *\d *\d *\d\b)'
-BNP_PATTERN = r'(1\s*[01]\s*\d\s*\d\s*\d\s*\d\s*\d)(\b|\D|\w)'
+BNP_PATTERN = r'(1\s*[01]\s*\d\s*\d\s*\d\s*\d\s*\d)(\b|\D)'
 BNP_PATTERN2 = r'(1\s*[01]\s*(\d\s*){5})(\D)+((\d\s*){1,5}(( ?\. ?|,)\d\d?)?)(\D|\b)'
 SANTANDER_OPIS = r'\?20.*\n?.*\n?.*\n?.*\?\s*3\s*1'
 SANTANDER_PATTERN = r'(1\s*[01]\s*\d\s*\d\s*\d\s*\d\s*\d)(\b|\D)'
