@@ -45,6 +45,44 @@ def przeksiegowanie(plik):
         pdi.write(slownik(df2['to'][i], dic, dlugi = True))
         rozr()
 
+
+def anulacje(plik):
+    df2 = p.read_excel(plik)
+    print('5 sekund na zmianę okna')
+    t.sleep(5)
+    for i in range(len(df2)):
+        pdi.press('enter')
+        t.sleep(0.05)
+        pdi.press('left')
+        t.sleep(0.05)
+        pdi.press('right')
+        t.sleep(0.05)
+        for _ in range(7):
+            pdi.press('backspace')
+        t.sleep(0.05)
+        pdi.write(str(df2['number'][i]))
+        pdi.press('enter')
+        t.sleep(0.05)
+        pdi.press('enter')
+        t.sleep(0.05)
+        pdi.write(str(df2['amount'][i]))
+        t.sleep(0.05)
+        pdi.press('enter')
+        t.sleep(0.05)
+        if df2['number'][i] in dic:
+            pdi.write(slownik(df2['number'][i], dic, dlugi = True))
+        else:
+            pdi.write('139-5')
+        t.sleep(0.05)
+        rozr()
+        t.sleep(0.05)
+        pdi.press('enter')
+        t.sleep(0.05)
+        pdi.press('enter')
+        t.sleep(0.05)
+        pdi.write('763-7')
+        t.sleep(0.05)
+
         
 
 def zamien_przelewy(plik):
@@ -364,6 +402,7 @@ def lista():
 def main():
     co = input('''Co chcesz zrobic?:
                
+    (a)nulacje 
     (p)rzeksiegowanie
     (z)amienic plik z Przelewy24
     (w)pisac plik z Przelewy24 do PK
@@ -426,6 +465,10 @@ def main():
         santander_wpis(plik, poz1, poz2)
     elif co == 'n':
         lista()
+    elif co == 'a':
+        plik = os.path.join('anulacje', input('Podaj nazwę pliku: \n'))
+        anulacje(plik)
+
     else:
         return
     main()
