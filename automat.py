@@ -46,6 +46,45 @@ def przeksiegowanie(plik):
         rozr()
 
 
+def pk2(plik):
+    df2 = p.read_csv(plik, sep=';')
+    print('5 sekund na zmianę okna')
+    t.sleep(5)
+    for i in range(len(df2)):
+        if i != 0:
+            pdi.press('enter')
+        t.sleep(0.05)
+        pdi.press('enter')
+        t.sleep(0.05)
+        pdi.press('enter')
+        t.sleep(0.05)
+        pdi.write(str(df2['amount'][i]))
+        t.sleep(0.05)
+        pdi.press('enter')
+        t.sleep(0.05)
+        if df2['from'][i] != '763-98' and df2['from'][i] != '764-98':
+            if int(df2['from'][i]) in dic:
+                pdi.write(slownik(int(df2['from'][i]), dic, dlugi = True))
+            else:
+                pdi.write('139-5')
+            rozr()
+        else:
+            pdi.write(df2['from'][i])
+        t.sleep(0.05)
+        pdi.press('enter')
+        t.sleep(0.05)
+        pdi.press('enter')
+        t.sleep(0.05)
+        if df2['to'][i] != '763-98' and df2['to'][i] != '764-98':
+            if int(df2['to'][i]) in dic:
+                pdi.write(slownik(int(df2['to'][i]), dic, dlugi = True))
+            else:
+                pdi.write('139-5')
+            rozr()
+        else:
+            pdi.write(df2['to'][i])
+
+
 def anulacje(plik):
     df2 = p.read_excel(plik)
     print('5 sekund na zmianę okna')
@@ -468,7 +507,9 @@ def main():
     elif co == 'a':
         plik = os.path.join('anulacje', input('Podaj nazwę pliku: \n'))
         anulacje(plik)
-
+    elif co == 'p2':
+        plik = os.path.join('pk', input('Podaj nazwę pliku: \n'))
+        pk2(plik)
     else:
         return
     main()
