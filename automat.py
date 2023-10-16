@@ -134,6 +134,16 @@ def zamien_przelewy(plik):
     df2.to_csv(plik2, index=False)
 
 
+def zamien_faktury(plik):
+    df = p.read_excel(plik, header=None)
+    df2 = p.DataFrame()
+    df2['Kwota'] = df[1]
+    df2['Rezerwacja'] = df[0]
+    df2['Konto'] = df2.apply(lambda x: slownik(x['Rezerwacja'], dic, dlugi = True), axis=1)
+    plik2 = plik.replace('.xlsx', '_zmienione.csv')
+    df2.to_csv(plik2, index=False)
+
+
 def wpisz_przelewy(plik):
     df = p.read_csv(plik, sep=',', dtype={'Konto': str, 'Rezerwacja': str, 'Kwota': str})
     print('Suma kwot to:', sum([float(x) for x in df['Kwota']]))
@@ -243,7 +253,7 @@ def bnp_wpis(plik, poz1, poz2):
                         for _ in range(7):
                             pdi.press('backspace')
                         pdi.write('139-5')
-                        rozr()
+                        #rozr()
                         pdi.press('down')
                 else:
                     for _ in range(7):
@@ -459,6 +469,9 @@ def main():
         zamien_przelewy(plik)
         if input('Czy chcesz od razu wpisać dane do PK? (t/n) \n') == 't':
             wpisz_przelewy(plik.replace('.csv', '_zmienione.csv'))
+    elif co == 'f':
+        plik = os.path.join('Przelewy24', input('Podaj nazwę pliku: \n'))
+        zamien_faktury(plik)
     elif co == 'p':
         plik = os.path.join('pk', input('Podaj nazwę pliku: \n'))
         przeksiegowanie(plik)
