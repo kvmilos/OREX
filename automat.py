@@ -469,7 +469,7 @@ def main():
         zamien_przelewy(plik)
         if input('Czy chcesz od razu wpisać dane do PK? (t/n) \n') == 't':
             wpisz_przelewy(plik.replace('.csv', '_zmienione.csv'))
-    elif co == 'f':
+    elif co == 'fa':
         plik = os.path.join('Przelewy24', input('Podaj nazwę pliku: \n'))
         zamien_faktury(plik)
     elif co == 'p':
@@ -489,6 +489,18 @@ def main():
         df2['rez'] = df.apply(lambda x: find_reservation(x['rez']), axis=1)
         df2.reset_index(drop=True, inplace=True)
         df2.to_excel(plik3, index=False)
+    elif co == 'fd':
+        plik = input("Podaj nazwę pliku: ")
+        plik = os.path.join('Przelewy24', plik)
+        df = p.read_excel(plik, header=None)
+        df.columns = ['rez', 'kwota']
+        df2 = p.DataFrame()
+        df2['Kwota'] = df['kwota']
+        df2['Rezerwacja'] = df.apply(lambda x: find_reservation(x['rez']), axis=1)
+        df2['Konto'] = df2.apply(lambda x: slownik(x['Rezerwacja'], dic, dlugi = True), axis=1)
+        df2.reset_index(drop=True, inplace=True)
+        plik2 = plik.replace('.xlsx', '_rez.csv')
+        df2.to_csv(plik2, index=False)
     elif co == 'bp':
         plik = os.path.join('wb_BNP', input('Podaj nazwę pliku z wyciągiem (bez .mt940): \n'))
         bnp_plik(plik)
