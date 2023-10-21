@@ -144,7 +144,7 @@ def zamien_faktury(plik):
     df2.to_csv(plik2, index=False)
 
 
-def wpisz_przelewy(plik):
+def wpisz_przelewy(plik, ile_rozr, ile_tab=5):
     df = p.read_csv(plik, sep=',', dtype={'Konto': str, 'Rezerwacja': str, 'Kwota': str})
     print('Suma kwot to:', sum([float(x) for x in df['Kwota']]))
     print('5 sekund na zmianę okna')
@@ -157,13 +157,13 @@ def wpisz_przelewy(plik):
         pdi.write(row['Konto'])
         t.sleep(0.05)
         pdi.press('Enter')
-    for _ in range(len(df)):
+    for _ in range(ile_rozr - 1):
         pdi.press('up')
         t.sleep(0.05)
-    for _ in range(5):
+    for _ in range(ile_tab):
         pdi.press('tab')
         t.sleep(0.05)
-    for _ in range(len(df)):
+    for _ in range(ile_rozr):
         rozr()
         t.sleep(0.05)
         pdi.press('down')
@@ -477,7 +477,9 @@ def main():
         przeksiegowanie(plik)
     elif co == 'w':
         plik = os.path.join('Przelewy24', input('Podaj nazwę pliku: \n'))
-        wpisz_przelewy(plik)
+        ile_rozr = int(input('Ile rozrachunków? '))
+        ile_tab = int(input('Ile tab? '))
+        wpisz_przelewy(plik, ile_rozr, ile_tab)
     elif co == 'f':
         plik = input("Podaj nazwę pliku: ")
         plik = os.path.join('FVS', plik)
@@ -535,6 +537,14 @@ def main():
     elif co == 'p2':
         plik = os.path.join('pk', input('Podaj nazwę pliku: \n'))
         pk2(plik)
+    elif co == 'rozr':
+        ile_rozr = int(input('Ile rozrachunków? '))
+        t.sleep(5)
+        for _ in range(ile_rozr):
+            rozr()
+            t.sleep(0.05)
+            pdi.press('down')
+            t.sleep(0.05)
     else:
         return
     main()
