@@ -144,8 +144,12 @@ def zamien_faktury(plik):
     df2.to_csv(plik2, index=False)
 
 
-def wpisz_przelewy(plik, ile_rozr, ile_tab=5):
+def wpisz_przelewy(plik, ile_rozr, ile_tab):
     df = p.read_csv(plik, sep=',', dtype={'Konto': str, 'Rezerwacja': str, 'Kwota': str})
+    if ile_rozr == 0:
+        ile_rozr = len(df)
+    if ile_tab == 0:
+        ile_tab = 5
     print('Suma kwot to:', sum([float(x) for x in df['Kwota']]))
     print('5 sekund na zmianę okna')
     t.sleep(5)
