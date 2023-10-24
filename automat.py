@@ -472,7 +472,7 @@ def main():
         plik = os.path.join('Przelewy24', input('Podaj nazwę pliku: \n'))
         zamien_przelewy(plik)
         if input('Czy chcesz od razu wpisać dane do PK? (t/n) \n') == 't':
-            wpisz_przelewy(plik.replace('.csv', '_zmienione.csv'))
+            wpisz_przelewy(plik.replace('.csv', '_zmienione.csv'), 0, 5)
     elif co == 'fa':
         plik = os.path.join('Przelewy24', input('Podaj nazwę pliku: \n'))
         zamien_faktury(plik)
