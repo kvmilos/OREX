@@ -161,7 +161,7 @@ def wpisz_przelewy(plik, ile_rozr, ile_tab):
         pdi.write(row['Konto'])
         t.sleep(0.05)
         pdi.press('Enter')
-    for _ in range(ile_rozr - 1):
+    for _ in range(ile_rozr):
         pdi.press('up')
         t.sleep(0.05)
     for _ in range(ile_tab):
