@@ -12,16 +12,19 @@ def get_dic():
     return dic
 
 def slownik(rez, dic, dlugi=False) -> str:
-    if not dlugi:
-        if dic[int(rez)]:
-            return str(dic[int(rez)])
+    if rez != None:
+        if not dlugi:
+            if dic[int(rez)]:
+                return str(dic[int(rez)])
+            else:
+                return 'Nie ma'
         else:
-            return 'Nie ma'
+            if dic[int(rez)]:
+                return '201-2-1-'+str(dic[int(rez)])
+            else:
+                return 'Nie ma'
     else:
-        if dic[int(rez)]:
-            return '201-2-1-'+str(dic[int(rez)])
-        else:
-            return 'Nie ma'
+        return 'Nie ma'
         
 
 def myszka():
@@ -52,4 +55,8 @@ def find_reservation(text, spaces=False):
         pattern = r'1[01]\d{5}'
     else:
         pattern = r'1\s*[01]\s*\d{5}'
-    return re.findall(pattern, text)[0]
+    if re.findall(pattern, text):
+        return str(re.findall(pattern, text)[0])
+    else:
+        return None
+

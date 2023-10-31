@@ -502,7 +502,7 @@ def main():
         df.columns = ['rez', 'kwota']
         df2 = p.DataFrame()
         df2['Kwota'] = df['kwota']
-        df2['Rezerwacja'] = df.apply(lambda x: find_reservation(x['rez']), axis=1)
+        df2['Rezerwacja'] = df.apply(lambda x: find_reservation(str(x['rez']), spaces = True), axis=1)
         df2['Konto'] = df2.apply(lambda x: slownik(x['Rezerwacja'], dic, dlugi = True), axis=1)
         df2.reset_index(drop=True, inplace=True)
         plik2 = plik.replace('.xlsx', '_rez.csv')
