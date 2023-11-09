@@ -150,7 +150,7 @@ def wpisz_przelewy(plik, ile_rozr, ile_tab):
         ile_rozr = len(df)
     if ile_tab == 0:
         ile_tab = 5
-    print('Suma kwot to:', sum([float(x) for x in df['Kwota']]))
+    print('Suma kwot to:', sum([float(x.replace(' ', '')) for x in df['Kwota']]))
     print('5 sekund na zmianę okna')
     t.sleep(5)
     for _, row in df.iterrows():
@@ -161,17 +161,17 @@ def wpisz_przelewy(plik, ile_rozr, ile_tab):
         pdi.write(row['Konto'])
         t.sleep(0.05)
         pdi.press('Enter')
-    for _ in range(ile_rozr):
-        pdi.press('up')
-        t.sleep(0.05)
-    for _ in range(ile_tab):
-        pdi.press('tab')
-        t.sleep(0.05)
-    for _ in range(ile_rozr):
-        rozr()
-        t.sleep(0.05)
-        pdi.press('down')
-        t.sleep(0.05)
+    # for _ in range(ile_rozr):
+    #     pdi.press('up')
+    #     t.sleep(0.05)
+    # for _ in range(ile_tab):
+    #     pdi.press('tab')
+    #     t.sleep(0.05)
+    # for _ in range(ile_rozr):
+    #     rozr()
+    #     t.sleep(0.05)
+    #     pdi.press('down')
+    #     t.sleep(0.05)
     
 
 def bnp_plik(plik):
