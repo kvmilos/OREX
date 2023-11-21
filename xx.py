@@ -17,7 +17,8 @@ def rozr():
 def wpisz():
     with open ('xx.txt', 'r') as f:
         p = f.read()
-        p = p.replace('\n', ' ')
+        p = p.replace('\n', '|')
+        p = p.replace('/2023', '')
     if p == 'q':
         return
     p = p.replace('-', ' ').replace(';', ' ').replace('(', ' ').replace(')', ' ').replace('/', ' ')

@@ -7,9 +7,9 @@ import re
 from tkinter import Tk
 
 BNP_OPIS = r'\^20.*\n?.*\n?.*\n?.*\^32'
-PATTERN1 = r'(1 *[01] *\d *\d *\d *\d *\d\b)'
-BNP_PATTERN = r'(1\s*[01]\s*\d\s*\d\s*\d\s*\d\s*\d)(\b|\D)'
-BNP_PATTERN2 = r'(1\s*[01]\s*(\d\s*){5})(\D)+((\d\s*){1,5}(( ?\. ?|,)\d\d?)?)(\D|\b)'
+PATTERN1 = r'(^|\D)(1 *[01] *\d *\d *\d *\d *\d\b)'
+BNP_PATTERN = r'(^|\D)(1\s*[01]\s*\d\s*\d\s*\d\s*\d\s*\d)(\b|\D)'
+BNP_PATTERN2 = r'(^|\D)(1\s*[01]\s*(\d\s*){5})(\D)+((\d\s*){1,5}(( ?\. ?|,)\d\d?)?)(\D|\b)'
 SANTANDER_OPIS = r'\?20.*\n?.*\n?.*\n?.*\?\s*3\s*1'
 SANTANDER_PATTERN = r'(1\s*[01]\s*\d\s*\d\s*\d\s*\d\s*\d)(\b|\D)'
 SANTANDER_PATTERN2 = r'(1\s*[01]\s*(\d\s*){5})(\D)+((\d\s*){1,5}((\.|,)\d\d?)?)(\D|\b)'
@@ -192,7 +192,7 @@ def bnp_plik(plik):
             line2 = line2.replace("^32", "")
             matches = re.findall(PATTERN1, line2)
             if len(matches) == 1:
-                nr = matches[0].replace(" ", "")
+                nr = matches[0][1].replace(" ", "")
                 if int(nr) in dic:
                     f.write(str(slownik(nr, dic)) + "    <= " + nr + " | " + line2 + "\n")
                 else:
@@ -214,7 +214,7 @@ def bnp_wpis(plik, poz1, poz2):
         desc = przelew.replace("^20", "").replace("\n", "").replace("^21", "").replace("^22", "").replace("^23", "").replace("^24", "").replace("^25", "").replace("^32", "")
         matches = re.findall(BNP_PATTERN, desc)
         if len(matches) == 1:
-            nr = matches[0][0].replace(" ", "")
+            nr = matches[0][1].replace(" ", "")
             tab.append([int(nr)])
         elif len(matches) > 1:
             wielokrotne = re.findall(BNP_PATTERN2, desc)
@@ -223,8 +223,8 @@ def bnp_wpis(plik, poz1, poz2):
             else:
                 tab.append([])
                 for wiel in wielokrotne:
-                    rezerwacja = int(wiel[0].replace(" ", ""))
-                    kwota = wiel[3].replace(" ", "")
+                    rezerwacja = int(wiel[1].replace(" ", ""))
+                    kwota = wiel[4].replace(" ", "")
                     tab[-1].append(rezerwacja)
                     tab[-1].append(kwota)
         else:
@@ -257,7 +257,7 @@ def bnp_wpis(plik, poz1, poz2):
                         for _ in range(7):
                             pdi.press('backspace')
                         pdi.write('139-5')
-                        #rozr()
+                        rozr()
                         pdi.press('down')
                 else:
                     for _ in range(7):
@@ -307,7 +307,7 @@ def santander_plik(plik):
             line2 = line2.replace("?32", "")
             matches = re.findall(PATTERN1, line2)
             if len(matches) == 1:
-                nr = matches[0].replace(" ", "")
+                nr = matches[0][1].replace(" ", "")
                 if int(nr) in dic:
                     f.write(str(slownik(nr, dic)) + "<= " + nr + " | " + line2 + "\n")
                 else:
