@@ -9,7 +9,7 @@ from tkinter import Tk
 BNP_OPIS = r'\^20.*\n?.*\n?.*\n?.*\^32'
 PATTERN1 = r'(^|\D)(1 *[01] *\d *\d *\d *\d *\d\b)'
 BNP_PATTERN = r'(^|\D)(1\s*[01]\s*\d\s*\d\s*\d\s*\d\s*\d)(\b|\D)'
-BNP_PATTERN2 = r'(^|\D)(1\s*[01]\s*(\d\s*){5})(\D)+((\d\s*){1,5}(( ?\. ?|,)\d\d?)?)(\D|\b)'
+BNP_PATTERN2 = r'(\b|\D)(1\s*[01]\s*(\d\s*){5})(\D)+((\d\s*){1,5}(( ?\. ?|,)\d\d?)?)(\D|\b)'
 SANTANDER_OPIS = r'\?20.*\n?.*\n?.*\n?.*\?\s*3\s*1'
 SANTANDER_PATTERN = r'(1\s*[01]\s*\d\s*\d\s*\d\s*\d\s*\d)(\b|\D)'
 SANTANDER_PATTERN2 = r'(1\s*[01]\s*(\d\s*){5})(\D)+((\d\s*){1,5}((\.|,)\d\d?)?)(\D|\b)'
@@ -36,54 +36,70 @@ def przeksiegowanie(plik):
         else:
             pdi.write('139-5')
         t.sleep(0.05)
-        rozr()
-        t.sleep(0.05)
         pdi.press('enter')
         t.sleep(0.05)
         pdi.press('enter')
         t.sleep(0.05)
         pdi.write(slownik(df2['to'][i], dic, dlugi = True))
-        rozr()
 
 
-def pk2(plik):
-    df2 = p.read_csv(plik, sep=';')
+def pk_prawy(plik):
+    df = p.read_excel(plik, header=None)
+    df2 = p.DataFrame()
+    df2['Kwota'] = df[0]
+    df2['Rezerwacja'] = df[1]
+    df2['Konto'] = df2.apply(lambda x: slownik(x['Rezerwacja'], dic, dlugi = True), axis=1)
+    df2 = df2.astype(str)
+    print(sum([float(x.replace(' ', '')) for x in df2['Kwota']]))
     print('5 sekund na zmianę okna')
     t.sleep(5)
-    for i in range(len(df2)):
-        if i != 0:
+    for i, row in df2.iterrows():
+        pdi.press('enter')
+        t.sleep(0.05)
+        pdi.press('enter')
+        t.sleep(0.05)
+        pdi.write(row['Kwota'])
+        t.sleep(0.05)
+        pdi.press('enter')
+        t.sleep(0.05)
+        pdi.write('764-98')
+        t.sleep(0.05)
+        pdi.press('enter')
+        t.sleep(0.05)
+        pdi.press('enter')
+        t.sleep(0.05)
+        pdi.write(row['Konto'])
+        if i != len(df2)-1:
             pdi.press('enter')
-        t.sleep(0.05)
-        pdi.press('enter')
-        t.sleep(0.05)
-        pdi.press('enter')
-        t.sleep(0.05)
-        pdi.write(str(df2['amount'][i]))
-        t.sleep(0.05)
-        pdi.press('enter')
-        t.sleep(0.05)
-        if df2['from'][i] != '763-98' and df2['from'][i] != '764-98':
-            if int(df2['from'][i]) in dic:
-                pdi.write(slownik(int(df2['from'][i]), dic, dlugi = True))
-            else:
-                pdi.write('139-5')
-            rozr()
-        else:
-            pdi.write(df2['from'][i])
-        t.sleep(0.05)
-        pdi.press('enter')
-        t.sleep(0.05)
-        pdi.press('enter')
-        t.sleep(0.05)
-        if df2['to'][i] != '763-98' and df2['to'][i] != '764-98':
-            if int(df2['to'][i]) in dic:
-                pdi.write(slownik(int(df2['to'][i]), dic, dlugi = True))
-            else:
-                pdi.write('139-5')
-            rozr()
-        else:
-            pdi.write(df2['to'][i])
 
+def pk_lewy(plik):
+    df = p.read_excel(plik, header=None)
+    df2 = p.DataFrame()
+    df2['Kwota'] = df[0]
+    df2['Rezerwacja'] = df[1]
+    df2['Konto'] = df2.apply(lambda x: slownik(x['Rezerwacja'], dic, dlugi = True), axis=1)
+    df2 = df2.astype(str)
+    print(sum([float(x.replace(' ', '')) for x in df2['Kwota']]))
+    print('5 sekund na zmianę okna')
+    t.sleep(5)
+    for i, row in df2.iterrows():
+        pdi.press('enter')
+        t.sleep(0.05)
+        pdi.press('enter')
+        t.sleep(0.05)
+        pdi.write(row['Kwota'])
+        t.sleep(0.05)
+        pdi.press('enter')
+        t.sleep(0.05)
+        pdi.write(row['Konto'])
+        t.sleep(0.05)
+        pdi.press('enter')
+        t.sleep(0.05)
+        pdi.press('enter')
+        t.sleep(0.05)
+        pdi.write('763-98')
+        if i != len(df2)-1:
+            pdi.press('enter')
 
 def anulacje(plik):
     df2 = p.read_excel(plik)
@@ -161,17 +177,17 @@ def wpisz_przelewy(plik, ile_rozr, ile_tab):
         pdi.write(row['Konto'])
         t.sleep(0.05)
         pdi.press('Enter')
-    # for _ in range(ile_rozr):
-    #     pdi.press('up')
-    #     t.sleep(0.05)
-    # for _ in range(ile_tab):
-    #     pdi.press('tab')
-    #     t.sleep(0.05)
-    # for _ in range(ile_rozr):
-    #     rozr()
-    #     t.sleep(0.05)
-    #     pdi.press('down')
-    #     t.sleep(0.05)
+    for _ in range(ile_rozr):
+        pdi.press('up')
+        t.sleep(0.05)
+    for _ in range(ile_tab):
+        pdi.press('tab')
+        t.sleep(0.05)
+    for _ in range(ile_rozr):
+        rozr()
+        t.sleep(0.05)
+        pdi.press('down')
+        t.sleep(0.05)
     
 
 def bnp_plik(plik):
@@ -465,6 +481,8 @@ def main():
     (sp) santander plik
     (s) santander wpis
     (n)umery - z listy
+    (pp) przeksiewanie prawe
+    (pl) przeksiegowanie lewe
     (q)uit
                
 ''')
@@ -538,9 +556,10 @@ def main():
     elif co == 'a':
         plik = os.path.join('anulacje', input('Podaj nazwę pliku: \n'))
         anulacje(plik)
-    elif co == 'p2':
-        plik = os.path.join('pk', input('Podaj nazwę pliku: \n'))
-        pk2(plik)
+    elif co == 'pp':
+        pk_prawy(os.path.join('pk', 'grosze.xlsx'))
+    elif co == 'pl':
+        pk_lewy(os.path.join('pk', 'grosze.xlsx'))
     elif co == 'rozr':
         ile_rozr = int(input('Ile rozrachunków? '))
         t.sleep(5)
