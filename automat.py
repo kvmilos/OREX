@@ -539,11 +539,7 @@ def main():
         plik = input("Podaj nazwę pliku z wyciągiem (bez .eMT): ")
         plik = os.path.join('wb_santander', plik)
         santander_plik(plik)
-        czy = input("Czy chcesz kontynuować? (t/n) ")
-        if czy == 't':
-            main()      
-        else:
-            print("zakończono")
+        main()
     elif co == 's':
         plik = input("Podaj nazwę pliku z wyciągiem (bez .eMT): ")
         plik = os.path.join('wb_santander', plik)
