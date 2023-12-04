@@ -22,26 +22,28 @@ def wpisz():
     if p == 'q':
         return
     p = p.replace('-', ' ').replace(';', ' ').replace('(', ' ').replace(')', ' ').replace('/', ' ')
+    with open ('xy.txt', 'w') as f:
+        f.write(p)
     print(p)
     lista = [p.split()[i:i+2] for i in range(0, len(p.split()), 2)]
-    print(lista)
+    # print(lista)
     print("5 sekund na zmianę okna") 
     t.sleep(5) 
 
-    for i, row in enumerate(lista): 
-        pdi.write(str(row[1]))
-        pdi.press('tab')
-        pdi.write('201-2-1-'+str(dic[int(row[0])]))
-        if i != len(lista)-1:
-            pdi.press('enter')
+    # for i, row in enumerate(lista): 
+    #     pdi.write(str(row[1]))
+    #     pdi.press('tab')
+    #     pdi.write('201-2-1-'+str(dic[int(row[0])]))
+    #     if i != len(lista)-1:
+    #         pdi.press('enter')
     
-    for i in range(len(lista)-1):
-        pdi.press('up')
+    # for i in range(len(lista)-1):
+    #     pdi.press('up')
 
-    pdi.press('tab')
-    pdi.press('tab')
-    pdi.press('tab')
-    pdi.press('tab')
+    # pdi.press('tab')
+    # pdi.press('tab')
+    # pdi.press('tab')
+    # pdi.press('tab')
     #35trans(len(lista))
     
 
