@@ -129,8 +129,6 @@ def anulacje(plik):
         else:
             pdi.write('139-5')
         t.sleep(0.05)
-        rozr()
-        t.sleep(0.05)
         pdi.press('enter')
         t.sleep(0.05)
         pdi.press('enter')
