@@ -6,7 +6,7 @@ import os
 import re
 from tkinter import Tk
 
-BNP_OPIS = r'\^20.*\n?.*\n?.*\n?.*\n?.*\^32'
+BNP_OPIS = r'(\^20)(.*?\n?.*?\n?.*?\n?.*?\n?.*?)\^(27|32)'
 PATTERN1 = r'(^|\D)(1 *[01] *\d *\d *\d *\d *\d\b)'
 BNP_PATTERN = r'(^|\D)(1\s*[01]\s*\d\s*\d\s*\d\s*\d\s*\d)(\b|\D)'
 BNP_PATTERN2 = r'(\b|\D)(1\s*[01]\s*(\d\s*){5})(\D)+((\d\s*){1,5}(( ?\. ?|,)\d\d?)?)(\D|\b)'
@@ -195,9 +195,11 @@ def bnp_plik(plik):
     dane = f.read()
     f.close()
     opisy = re.findall(BNP_OPIS, dane)
+    print(opisy)
+    print(opisy[0])
     with open(plik2, 'w') as f:
         for przelew in opisy:
-            line2 = przelew.replace("^20", "")
+            line2 = przelew[1].replace("^20", "")
             line2 = line2.replace("\n", "")
             line2 = line2.replace("^21", "")
             line2 = line2.replace("^22", "")
