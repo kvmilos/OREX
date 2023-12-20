@@ -195,8 +195,6 @@ def bnp_plik(plik):
     dane = f.read()
     f.close()
     opisy = re.findall(BNP_OPIS, dane)
-    print(opisy)
-    print(opisy[0])
     with open(plik2, 'w') as f:
         for przelew in opisy:
             line2 = przelew[1].replace("^20", "")
@@ -227,7 +225,7 @@ def bnp_wpis(plik, poz1, poz2):
     f.close()
     opisy = re.findall(BNP_OPIS, dane)
     for przelew in opisy:
-        desc = przelew.replace("^20", "").replace("\n", "").replace("^21", "").replace("^22", "").replace("^23", "").replace("^24", "").replace("^25", "").replace("^32", "")
+        desc = przelew[1].replace("^20", "").replace("\n", "").replace("^21", "").replace("^22", "").replace("^23", "").replace("^24", "").replace("^25", "").replace("^32", "")
         matches = re.findall(BNP_PATTERN, desc)
         if len(matches) == 1:
             nr = matches[0][1].replace(" ", "")
