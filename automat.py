@@ -249,6 +249,7 @@ def bnp_wpis(plik, poz1, poz2):
     print('Liczba pozycji: ', len(tab))
     start = int(input("Od którego nr rezerwacji? "))
     skipniecie = [int(x) for x in input("skip: ").split()]
+    skip2 = [int(x) for x in input("skip2 (prowizje): ").split()]
     print("10 sekund na zmianę okna") 
     t.sleep(10)
     ile = poz2 - poz1 + 1
@@ -257,6 +258,9 @@ def bnp_wpis(plik, poz1, poz2):
     for index, row in enumerate(tab):
         if started != None and index >= started + ile:
             break
+        if poz1 in skip2:
+            poz1 += 1
+            pdi.press('down')
         if poz1 not in skipniecie: 
             if row[0] == start and not started:
                 n = 1
