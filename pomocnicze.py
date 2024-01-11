@@ -52,9 +52,9 @@ def rozr():
 
 def find_reservation(text, spaces=False):
     if not spaces:
-        pattern = r'1[01]\d{5}'
+        pattern = r'1[012]\d{5}'
     else:
-        pattern = r'1\s*[01]\s*\d{5}'
+        pattern = r'1\s*[012]\s*\d{5}'
     if re.findall(pattern, text):
         return str(re.findall(pattern, text)[0])
     else:
