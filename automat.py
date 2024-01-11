@@ -8,12 +8,12 @@ from tkinter import Tk
 import random
 
 BNP_OPIS = r'(\^20)(.*?\n?.*?\n?.*?\n?.*?\n?.*?)\^(27|32)'
-PATTERN1 = r'(^|\D)(1 *[01] *\d *\d *\d *\d *\d\b)'
-BNP_PATTERN = r'(^|\D)(1\s*[01]\s*\d\s*\d\s*\d\s*\d\s*\d)(\b|\D)'
-BNP_PATTERN2 = r'(\b|\D)(1\s*[01]\s*(\d\s*){5})(\D)+((\d\s*){1,5}(( ?\. ?|,)\d\d?)?)(\D|\b)'
+PATTERN1 = r'(^|\D)(1 *[012] *\d *\d *\d *\d *\d\b)'
+BNP_PATTERN = r'(^|\D)(1\s*[012]\s*\d\s*\d\s*\d\s*\d\s*\d)(\b|\D)'
+BNP_PATTERN2 = r'(\b|\D)(1\s*[012]\s*(\d\s*){5})(\D)+((\d\s*){1,5}(( ?\. ?|,)\d\d?)?)(\D|\b)'
 SANTANDER_OPIS = r'\?20.*?\n?.*?\n?.*?\n?.*?\?\s*3\s*[12]'
-SANTANDER_PATTERN = r'(1\s*[01]\s*\d\s*\d\s*\d\s*\d\s*\d)(\b|\D)'
-SANTANDER_PATTERN2 = r'(1\s*[01]\s*(\d\s*){5})(\D)+((\d\s*){1,5}((\.|,)\d\d?)?)(\D|\b)'
+SANTANDER_PATTERN = r'(1\s*[012]\s*\d\s*\d\s*\d\s*\d\s*\d)(\b|\D)'
+SANTANDER_PATTERN2 = r'(1\s*[012]\s*(\d\s*){5})(\D)+((\d\s*){1,5}((\.|,)\d\d?)?)(\D|\b)'
 url = 'https://raw.githubusercontent.com/kvmilos/OREX/main/kontrahenci.csv'
 url += '?random=' + str(random.randint(1, 1000000))
 df = p.read_csv(url)
