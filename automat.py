@@ -7,10 +7,10 @@ import re
 from tkinter import Tk
 import random
 
-BNP_OPIS = r'(\^20)(.*?\n?.*?\n?.*?\n?.*?\n?.*?)\^(27|32)'
-PATTERN1 = r'(^|\D)(1 *[012] *\d *\d *\d *\d *\d\b)'
-BNP_PATTERN = r'(^|\D)(1\s*[012]\s*\d\s*\d\s*\d\s*\d\s*\d)(\b|\D)'
-BNP_PATTERN2 = r'(\b|\D)(1\s*[012]\s*(\d\s*){5})(\D)+((\d\s*){1,5}(( ?\. ?|,)\d\d?)?)(\D|\b)'
+BNP_OPIS = r'(\^20)(.*?\n?.*?\n?.*?\n?.*?\n?.*?)\^(32)'
+PATTERN1 = r'(^|\D|00000)(1 *[012] *\d *\d *\d *\d *\d\b)'
+BNP_PATTERN = r'(^|\D|00000)(1\s*[012]\s*\d\s*\d\s*\d\s*\d\s*\d)(\b|\D)'
+BNP_PATTERN2 = r'(\b|\D|00000)(1\s*[012]\s*(\d\s*){5})(\D)+((\d\s*){1,5}(( ?\. ?|,)\d\d?)?)(\D|\b)'
 SANTANDER_OPIS = r'\?20.*?\n?.*?\n?.*?\n?.*?\?\s*3\s*[12]'
 SANTANDER_PATTERN = r'(1\s*[012]\s*\d\s*\d\s*\d\s*\d\s*\d)(\b|\D)'
 SANTANDER_PATTERN2 = r'(1\s*[012]\s*(\d\s*){5})(\D)+((\d\s*){1,5}((\.|,)\d\d?)?)(\D|\b)'
@@ -206,9 +206,10 @@ def bnp_plik(plik):
             line2 = line2.replace("^22", "")
             line2 = line2.replace("^23", "")
             line2 = line2.replace("^24", "")
+            line2 = line2.replace("^27", "")
             line2 = line2.replace("^32", "")
             matches = re.findall(PATTERN1, line2)
-            if len(matches) == 1:
+            if len(matches) == 1 or (len(matches) == 2 and matches[0][1] == matches[1][1]):
                 nr = matches[0][1].replace(" ", "")
                 if int(nr) in dic:
                     f.write(str(slownik(nr, dic)) + "    <= " + nr + " | " + line2 + "\n")
