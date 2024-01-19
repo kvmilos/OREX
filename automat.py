@@ -26,6 +26,7 @@ def przeksiegowanie(plik):
     for i in range(len(df2)):
         pdi.press('enter')
         t.sleep(0.05)
+        pdi.write(str(df2['from'][i]) + ' na ' + str(df2['to'][i]))
         pdi.press('enter')
         t.sleep(0.05)
         pdi.press('enter')
