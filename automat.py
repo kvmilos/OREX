@@ -35,10 +35,7 @@ def przeksiegowanie(plik):
         t.sleep(0.05)
         pdi.press('enter')
         t.sleep(0.05)
-        if df2['from'][i] in dic:
-            pdi.write(slownik(df2['from'][i], dic, dlugi = True))
-        else:
-            pdi.write('139-5')
+        pdi.write(slownik(df2['from'][i], dic, dlugi = True))
         t.sleep(0.05)
         pdi.press('enter')
         t.sleep(0.05)
