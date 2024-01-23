@@ -265,7 +265,7 @@ def bnp_wpis(plik, poz1, poz2):
                 n = 1
                 started = index + 1
             if n == 1:
-                print(index - started, 'z',  started + ile, row, f'({index+1})')
+                print(index - started + 2, ': ',  started + ile, 'z ',  f'({index+1})', row)
                 if len(row) == 1:
                     if row[0] != 'N/A':
                         if row[0] in dic:
