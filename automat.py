@@ -263,9 +263,9 @@ def bnp_wpis(plik, poz1, poz2):
         if poz1 not in skipniecie: 
             if row[0] == start and not started:
                 n = 1
-                started = index
+                started = index + 1
             if n == 1:
-                print(index - started, started + ile, row, f'({index+1})')
+                print(index - started, 'z',  started + ile, row, f'({index+1})')
                 if len(row) == 1:
                     if row[0] != 'N/A':
                         if row[0] in dic:
