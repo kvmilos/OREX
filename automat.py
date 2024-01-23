@@ -229,8 +229,8 @@ def bnp_wpis(plik, poz1, poz2):
     for przelew in opisy:
         desc = przelew[1].replace("^20", "").replace("\n", "").replace("^21", "").replace("^22", "").replace("^23", "").replace("^24", "").replace("^25", "").replace("^27","").replace("^32", "")
         matches = re.findall(BNP_PATTERN, desc)
-        for i in matches:
-            i = (i[0], i[1].replace(" ", ""), i[2:])
+        matches = [(i[0], i[1].replace(" ", ""), i[2]) for i in matches]
+        print(matches)
         if len(matches) == 1 or (len(matches) == 2 and matches[0][1] == matches[1][1]):
             nr = matches[0][1]
             tab.append([int(nr)])
