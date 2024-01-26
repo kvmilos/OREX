@@ -24,7 +24,8 @@ def przeksiegowanie(plik):
     print('5 sekund na zmianę okna')
     t.sleep(5)
     for i in range(len(df2)):
-        pdi.press('enter')
+        if i != 0:
+            pdi.press('enter')
         t.sleep(0.05)
         pdi.write(str(df2['from'][i]) + ' na ' + str(df2['to'][i]))
         pdi.press('enter')
@@ -260,6 +261,7 @@ def bnp_wpis(plik, poz1, poz2):
             break
         if poz1 in skip2:
             poz1 += 1
+            ile -= 1
             pdi.press('down')
         if poz1 not in skipniecie: 
             if row[0] == start and not started:
@@ -310,6 +312,7 @@ def bnp_wpis(plik, poz1, poz2):
                                 pdi.press('tab')
         else:
             pdi.press('down')
+            ile -= 1
         if n == 1:
             poz1 += 1
 
