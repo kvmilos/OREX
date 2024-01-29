@@ -43,6 +43,11 @@ def przeksiegowanie(plik):
         pdi.press('enter')
         t.sleep(0.05)
         pdi.write(slownik(df2['to'][i], dic, dlugi = True))
+        if i%50 == 0:
+            pdi.keyDown('ctrl')
+            pdi.press('s')
+            pdi.keyUp('ctrl')
+            t.sleep(60)
 
 
 def pk_prawy(plik):
