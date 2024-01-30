@@ -264,7 +264,7 @@ def bnp_wpis(plik, poz1, poz2):
     for index, row in enumerate(tab):
         if started != None and poz1 >= poz2:
             break
-        if poz1 in skip2:
+        while poz1 in skip2:
             poz1 += 1
             ile -= 1
             pdi.press('down')
