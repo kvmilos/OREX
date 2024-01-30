@@ -262,7 +262,7 @@ def bnp_wpis(plik, poz1, poz2):
     n = 0
     started = None
     for index, row in enumerate(tab):
-        if started != None and index >= started + ile + 1:
+        if started != None and poz1 >= poz2:
             break
         if poz1 in skip2:
             poz1 += 1
@@ -273,7 +273,7 @@ def bnp_wpis(plik, poz1, poz2):
                 n = 1
                 started = index + 1
             if n == 1:
-                print(f'{index - started + 2}: {index+1} z {started + ile} --- {row}')
+                print(f'{index - started + 2}: {poz1} z {poz2} -> {row}')
                 if len(row) == 1:
                     if row[0] != 'N/A':
                         if row[0] in dic:
