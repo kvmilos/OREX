@@ -258,7 +258,6 @@ def bnp_wpis(plik, poz1, poz2):
     skip2 = [int(x) for x in input("skip2 (prowizje): ").split()]
     print("10 sekund na zmianę okna") 
     t.sleep(10)
-    ile = poz2 - poz1 + 1
     n = 0
     started = None
     for index, row in enumerate(tab):
@@ -266,7 +265,6 @@ def bnp_wpis(plik, poz1, poz2):
             break
         while poz1 in skip2:
             poz1 += 1
-            ile -= 1
             pdi.press('down')
         if poz1 not in skipniecie: 
             if row[0] == start and not started:
@@ -317,7 +315,7 @@ def bnp_wpis(plik, poz1, poz2):
                                 pdi.press('tab')
         else:
             pdi.press('down')
-            ile -= 1
+            poz1 += 1
         if n == 1:
             poz1 += 1
 
