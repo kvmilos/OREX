@@ -315,7 +315,9 @@ def bnp_wpis(plik, poz1, poz2):
                                 pdi.press('tab')
         else:
             pdi.press('down')
+        while poz1 in skip2:
             poz1 += 1
+            pdi.press('down')
         if n == 1:
             poz1 += 1
 
