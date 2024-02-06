@@ -27,8 +27,8 @@ def wpisz():
     print(p)
     lista = [p.split()[i:i+2] for i in range(0, len(p.split()), 2)]
     # print(lista)
-    print("5 sekund na zmianę okna") 
-    t.sleep(5) 
+    # print("5 sekund na zmianę okna") 
+    # t.sleep(5) 
 
     # for i, row in enumerate(lista): 
     #     pdi.write(str(row[1]))
