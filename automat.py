@@ -162,7 +162,7 @@ def fvzp(plik):
     df2['Rezerwacja'] = df[0]
     df2['Konto'] = df2.apply(lambda x: slownik(x['Rezerwacja'], dic, dlugi = True), axis=1)
     df2 = df2.astype(str)
-    print('Suma kwot to:', sum([float(x.replace(' ', '')) for x in df['Kwota']]))
+    print('Suma kwot to:', sum([float(x.replace(' ', '')) for x in df2['Kwota']]))
     print('5 sekund na zmianę okna')
     t.sleep(5)
     for _, row in df2.iterrows():
