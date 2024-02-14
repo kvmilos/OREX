@@ -165,7 +165,7 @@ def fvzp(plik):
     print('Suma kwot to:', sum([float(x.replace(' ', '')) for x in df['Kwota']]))
     print('5 sekund na zmianę okna')
     t.sleep(5)
-    for _, row in df.iterrows():
+    for _, row in df2.iterrows():
         pdi.write(row['Kwota'])
         t.sleep(0.05)
         pdi.press('Enter')
