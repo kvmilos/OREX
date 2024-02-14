@@ -516,6 +516,7 @@ def main():
     (n)umery - z listy
     (pp) przeksiewanie prawe
     (pl) przeksiegowanie lewe
+    (fvzp) 
     (q)uit
                
 ''')
@@ -598,7 +599,7 @@ def main():
             pdi.press('down')
             t.sleep(0.05)
     elif co == 'fvzp':
-
+        fvzp(os.path.join('fvzp', 'fvzp.xlsx'))
     else:
         return
     main()
