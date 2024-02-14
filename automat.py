@@ -155,6 +155,26 @@ def zamien_przelewy(plik):
     df2.to_csv(plik2, index=False)
 
 
+def fvzp(plik):
+    df = p.read_excel(plik, header=None)
+    df2 = p.DataFrame()
+    df2['Kwota'] = df[1]
+    df2['Rezerwacja'] = df[0]
+    df2['Konto'] = df2.apply(lambda x: slownik(x['Rezerwacja'], dic, dlugi = True), axis=1)
+    df2 = df2.astype(str)
+    print('Suma kwot to:', sum([float(x.replace(' ', '')) for x in df['Kwota']]))
+    print('5 sekund na zmianę okna')
+    t.sleep(5)
+    for _, row in df.iterrows():
+        pdi.write(row['Kwota'])
+        t.sleep(0.05)
+        pdi.press('Enter')
+        t.sleep(0.05)
+        pdi.write(row['Konto'])
+        t.sleep(0.05)
+        pdi.press('Enter')
+
+
 def zamien_faktury(plik):
     df = p.read_excel(plik, header=None)
     df2 = p.DataFrame()
@@ -577,6 +597,8 @@ def main():
             t.sleep(0.05)
             pdi.press('down')
             t.sleep(0.05)
+    elif co == 'fvzp':
+
     else:
         return
     main()
