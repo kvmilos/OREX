@@ -225,7 +225,7 @@ def bnp_plik(plik):
     with open(plik2, 'w') as f:
         for przelew in opisy:
             line2 = przelew[1].replace("^20", "")
-            line2 = line2.replace("\n", "; ")
+            line2 = line2.replace("\n", " ")
             line2 = line2.replace("^21", "")
             line2 = line2.replace("^22", "")
             line2 = line2.replace("^23", "")
