@@ -233,8 +233,8 @@ def bnp_plik(plik):
             line2 = line2.replace("^27", "")
             line2 = line2.replace("^32", "")
             matches = re.findall(PATTERN1, line2)
+            matches = [(i[0], i[1].replace(" ", ""), i[2]) for i in matches]
             if len(matches) == 1 or (len(matches) == 2 and matches[0][1] == matches[1][1]):
-                nr = matches[0][1].replace(" ", "")
                 if int(nr) in dic:
                     f.write(str(slownik(nr, dic)) + "    <= " + nr + " | " + line2 + "\n")
                 else:
