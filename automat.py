@@ -8,7 +8,7 @@ from tkinter import Tk
 import random
 
 BNP_OPIS = r'(\^20)(.*?\n?.*?\n?.*?\n?.*?\n?.*?)\^(32)'
-PATTERN1 = r'(^|\D|00000)(1 *[012] *\d *\d *\d *\d *\d)(\D|\b)'
+PATTERN1 = r'(^|\b|\D|00000)(1 *[012] *\d *\d *\d *\d *\d)(\D|\b)'
 BNP_PATTERN = r'(^|\D|00000)(1\s*[012]\s*\d\s*\d\s*\d\s*\d\s*\d)(\b|\D)'
 BNP_PATTERN2 = r'(\b|\D|00000)(1\s*[012]\s*(\d\s*){5})(\D)+((\d\s*){1,5}(( ?\. ?|,)\d\d?)?)(\D|\b)'
 SANTANDER_OPIS = r'\?20.*?\n?.*?\n?.*?\n?.*?\?\s*3\s*[12]'
