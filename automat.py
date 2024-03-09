@@ -356,7 +356,7 @@ def santander_plik(plik):
             line2 = line2.replace("?31", "")
             line2 = line2.replace("?32", "")
             matches = re.findall(PATTERN1, line2)
-            if len(matches) == 1:
+            if len(matches) == 1 or (len(matches) == 2 and matches[0][1] == matches[1][1]):
                 nr = matches[0][1].replace(" ", "")
                 if int(nr) in dic:
                     f.write(str(slownik(nr, dic)) + "<= " + nr + " | " + line2 + "\n")
