@@ -379,10 +379,10 @@ def santander_wpis(plik, poz1, poz2):
     for przelew in opisy:
         desc = przelew.replace("?30", "").replace("\n", "").replace("?31", "")
         matches = re.findall(SANTANDER_PATTERN, desc)
-        if len(matches) == 1:
+        if len(matches) == 1 or (len(matches) == 2 and matches[0][0] == matches[1][0]):
             nr = matches[0][0].replace(" ", "")
             tab.append([int(nr)])
-        elif len(matches) > 1:
+        elif len(matches) > 1 or (len(matches) == 2 and matches[0][0] != matches[1][0]):
             wielokrotne = re.findall(SANTANDER_PATTERN2, desc)
             if len(wielokrotne) < 2:
                 tab.append(["N/A"])
