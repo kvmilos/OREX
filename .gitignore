@@ -1,16 +1,9 @@
 __pycache__
-FVS
-pk
-Przelewy24
-wb_BNP
-wb_santander
-Rclick — skrót.lnk
-xx.txt
-yy.txt
-anulacje
-lol.py
-xy.txt
-.vscode/settings.json
-faktury
-fvzp
-wb7
+*.mt940
+*.eMT
+*.txt
+*.xlsx
+.venv
+.vscode
+*.csv
+*.xlsm
