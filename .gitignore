@@ -9,5 +9,5 @@ __pycache__
 *.xlsm
 *.pdf
 *.ico
-*.exe
-!wakacjepl*.exe
+*.yaml
+*.ini
