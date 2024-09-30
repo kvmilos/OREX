@@ -12,3 +12,4 @@ __pycache__
 *.yaml
 *.yml
 *.ini
+*.eml
