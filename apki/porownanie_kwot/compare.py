@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 
 def read_xlsx(file):
     df = pd.read_excel(file, header=0)
@@ -13,10 +14,11 @@ def match_lists(list1, list2):
     unmatched_list2 = list2.copy()
     
     for i in list1:
-        if i in list2:
+        if i in unmatched_list2:
             matches.append((i, i))
             unmatched_list1.remove(i)
             unmatched_list2.remove(i)
+    
     
     return matches, unmatched_list1, unmatched_list2
 
@@ -33,9 +35,19 @@ def save_to_excel(headers, exact_matches, unmatched_list1, unmatched_list2):
     print('Comparison results saved to comparison_output.xlsx')
 
 def main():
+    print('EN: To start the comparison, prepare an Excel file with two columns of data to compare.\nPL: Aby zacząć porównywanie, przygotuj plik Excel z dwiema kolumnami danych do porównania.\n')
+    print('EN: The file should be in the same folder as this app and its name should be "compare.xlsx".\nPL: Plik powinien znajdować się w tym samym folderze co ta aplikacja i jego nazwa powinna być "compare.xlsx".\n')
+    _ = input('EN: If you are ready, press Enter.\nPL: Jeśli jesteś gotowy/a, naciśnij Enter.')
+
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    os.chdir(script_dir)
+
     file = 'compare.xlsx'
     headers, list1, list2 = read_xlsx(file)
 
     exact_matches, unmatched_list1, unmatched_list2 = match_lists(list1, list2)
 
     save_to_excel(headers, exact_matches, unmatched_list1, unmatched_list2)
+
+if __name__ == '__main__':
+    main()
