@@ -1,10 +1,15 @@
 import pandas as pd
+from decimal import Decimal
 
 def read_xlsx(file):
     df = pd.read_excel(file, header=0)
+    df = df.map(lambda x: str(x).replace(',', '.').replace('\xa0', ''))
     headers = df.columns.tolist()
     df1 = df.iloc[:, 0].tolist()
+    df1 = [Decimal(i) for i in df1]
     df2 = df.iloc[:, 1].tolist()
+    df2 = [Decimal(i) for i in df2]
+    
     return headers, df1, df2
 
 def match_lists(list1, list2):
