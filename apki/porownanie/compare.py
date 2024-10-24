@@ -15,8 +15,9 @@ def read_xlsx(file, how):
         df1 = list(set(df1))
         df2 = list(set(df2))
 
-    df1 = [Decimal(i) for i in df1]
-    df2 = [Decimal(i) for i in df2]
+    elif how == 1:
+        df1 = [Decimal(i) for i in df1]
+        df2 = [Decimal(i) for i in df2]
     
     return headers, df1, df2
 
