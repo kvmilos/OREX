@@ -9,6 +9,7 @@ from openpyxl.styles import PatternFill
 
 fak_NUMER = r'data i miejsce wystawienia\n\n(.*)\n'
 fak_DATA_WYSTAWIENIA = r'(\d{4}-\d{2}-\d{2}) .*\ndata i miejsce wystawienia'
+fak_TERMIN_PLATNOSCI = r'Termin.*?(\d{4}-\d{2}-\d{2}).*?Bank'
 fak_KWOTY = r'W tym.*?Brutto(.*?)Razem do'
 fak_REZERWACJA = r'Prowizja .* (1\d{6})'
 
@@ -32,7 +33,7 @@ pages = text.split('\x0c')
 
 current_page_number = 1
 previous_file_name = ''
-faktury = [['numer', 'data_wystawienia', 'kwota_netto', 'stawka_vat', 'kwota_brutto', 'rez', 'plik', 'strona']]
+faktury = [['numer', 'data_wystawienia', 'termin_platnosci', 'kwota_netto', 'stawka_vat', 'kwota_brutto', 'rez', 'plik', 'strona']]
 korekty = [['plik', 'strona']]
 for i, page in enumerate(pages):
     if i >= len(file_names):
@@ -49,6 +50,7 @@ for i, page in enumerate(pages):
     try:
         numer = re.search(fak_NUMER, page).group(1)
         data_wystawienia = re.search(fak_DATA_WYSTAWIENIA, page).group(1)
+        termin_platnosci = re.search(fak_TERMIN_PLATNOSCI, page).group(1)
         rezerwacja = re.search(fak_REZERWACJA, page).group(1)
         kwoty = re.search(fak_KWOTY, page, re.DOTALL).group(1).replace(' ', '').replace('\n', ' ').replace('%', '% ').strip()
         kw2 = [kwota for kwota in kwoty.split(' ') if kwota != '']
@@ -56,15 +58,15 @@ for i, page in enumerate(pages):
         kwota_netto = float(kwota_netto.replace(',', '.'))
         kwota_brutto = float(kwota_brutto.replace(',', '.'))
         rezerwacja = int(rezerwacja)
-        faktura = numer, data_wystawienia, kwota_netto, stawka_vat, kwota_brutto, rezerwacja, file_names[i], current_page_number
-        if rezerwacja not in [item[5] for item in faktury]:
+        faktura = numer, data_wystawienia, termin_platnosci, kwota_netto, stawka_vat, kwota_brutto, rezerwacja, file_names[i], current_page_number
+        if rezerwacja not in [item[6] for item in faktury]:
             faktury.append(faktura)
     except AttributeError:
         if i != num_pages:
             print(i+1, 'error lub korekta', 'plik:', file_names[i], 'strona: ', current_page_number)
             korekty.append([file_names[i], current_page_number])
     except ValueError:
-        faktury.append(['check', 'check', 'check', 'check', 'check', 'check', file_names[i], current_page_number])
+        faktury.append(['check', 'check', 'check', 'check', 'check', 'check', 'check', file_names[i], current_page_number])
         print('you need to check ' + file_names[i], 'page ' + str(current_page_number))
 
 
@@ -74,24 +76,24 @@ if len(faktury) > 1:
     with pd.ExcelWriter('faktury_wakacje.xlsx', mode='w') as writer:
         fak.to_excel(writer, sheet_name='faktury', index=False, header=False)
         kor.to_excel(writer, sheet_name='korekty', index=False, header=False)
-columns = ['pdf_rez', 'pdf_nr_dok', 'pdf_data_dok', 'samo_start_date', 'samo_country', 'pdf_netto', 'pdf_brutto', 'samo_adjustment_nr', 'samo_date*', 'samo_adjustment*', 'pdf_st_vat', 'samo_rez', 'samo_com', 'samo_debt', 'diff']
+columns = ['pdf_rez', 'pdf_nr_dok', 'pdf_data_dok', 'samo_start_date', 'samo_country', 'pdf_netto', 'pdf_brutto', 'pdf_termin', 'samo_date*', 'samo_adjustment*', 'pdf_st_vat', 'samo_rez', 'samo_com', 'samo_debt', 'diff']
 
 rows = []
 
 for row in faktury[1:]:
     new_row = {
-        'pdf_rez': row[5],
+        'pdf_rez': row[6],
         'pdf_nr_dok': row[0],
         'pdf_data_dok': row[1],
-        'pdf_netto': row[2],
-        'pdf_brutto': row[4],
-        'pdf_st_vat': row[3],
+        'pdf_netto': row[3],
+        'pdf_brutto': row[5],
+        'pdf_st_vat': row[4],
+        'pdf_termin': row[2],
         'samo_start_date': None,
         'samo_country': None,
         'samo_rez': None,
         'samo_com': None,
         'samo_debt': None,
-        'samo_adjustment_nr': None,
         'samo_date*': None,
         'samo_adjustment*': None,
         'diff': None
