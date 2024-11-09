@@ -1,25 +1,42 @@
+import os
+import re
 import pdfminer
 import pdfminer.high_level
 from pdfminer.high_level import extract_pages
-import re
-import os
 import pandas as pd
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill
+import requests
+import json
 
-fak_NUMER = r'data i miejsce wystawienia\n\n(.*)\n'
-fak_DATA_WYSTAWIENIA = r'(\d{4}-\d{2}-\d{2}) .*\ndata i miejsce wystawienia'
-fak_TERMIN_PLATNOSCI = r'Termin.*?(\d{4}-\d{2}-\d{2}).*?Bank'
-fak_KWOTY = r'W tym.*?Brutto(.*?)Razem do'
-fak_REZERWACJA = r'Prowizja .* (1\d{6})'
+def fetch_patterns():
+    url = "https://raw.githubusercontent.com/kvmilos/OREX/refs/heads/main/regex_patterns.json"
+    response = requests.get(url)
+    if response.status_code == 200:
+        return json.loads(response.text)
+    else:
+        print("Nie udało się pobrać wzorców.")
+        return None
 
+patterns = fetch_patterns()
+if patterns is None:
+    print("Nie udało się pobrać wzorców.")
+    exit(1)
 
-if not os.path.exists('done'):
-    os.makedirs('done')
+fak_NUMER = patterns["wakacje"]["numer_faktury"]
+fak_DATA_WYSTAWIENIA = patterns["wakacje"]["data_faktury"]
+fak_TERMIN_PLATNOSCI = patterns["wakacje"]["termin_platnosci"]
+fak_KWOTY = patterns["wakacje"]["kwoty"]
+fak_REZERWACJA = patterns["wakacje"]["rezerwacja"]
 
+os.makedirs('done', exist_ok=True)
+
+faktury = [['numer', 'data_wystawienia', 'termin_platnosci', 'kwota_netto', 'stawka_vat', 'kwota_brutto', 'rez', 'plik', 'strona']]
+korekty = [['plik', 'strona']]
 num_pages = 0
 text = ''
 file_names = []
+
 for file in os.listdir('.'):
     if file.endswith('.pdf'):
         with open(file, 'rb') as f:
@@ -27,47 +44,47 @@ for file in os.listdir('.'):
         current_num_pages = len(list(extract_pages(file)))
         num_pages += current_num_pages
         file_names.extend([file] * current_num_pages)
-        os.rename(file, 'done/' + file)
+        os.rename(file, os.path.join('done', file))
 
 pages = text.split('\x0c')
 
-current_page_number = 1
-previous_file_name = ''
-faktury = [['numer', 'data_wystawienia', 'termin_platnosci', 'kwota_netto', 'stawka_vat', 'kwota_brutto', 'rez', 'plik', 'strona']]
-korekty = [['plik', 'strona']]
-for i, page in enumerate(pages):
+def is_korekta(page_text):
+    return not (re.search(fak_NUMER, page_text) and re.search(fak_DATA_WYSTAWIENIA, page_text) and 
+                re.search(fak_TERMIN_PLATNOSCI, page_text) and re.search(fak_REZERWACJA, page_text))
+
+def parse_page_data(page_text, file_name, page_number):
+    numer = re.search(fak_NUMER, page_text).group(1)
+    data_wystawienia = re.search(fak_DATA_WYSTAWIENIA, page_text).group(1)
+    termin_platnosci = re.search(fak_TERMIN_PLATNOSCI, page_text).group(1)
+    rezerwacja = int(re.search(fak_REZERWACJA, page_text).group(1))
+    kwoty = re.search(fak_KWOTY, page_text, re.DOTALL).group(1).replace(' ', '').replace('\n', ' ').replace('%', '% ').strip()
+    kwota_netto, stawka_vat, _, kwota_brutto = [float(kw.replace(',', '.')) if i != 1 else kw for i, kw in enumerate(kwoty.split())]
+
+    return (numer, data_wystawienia, termin_platnosci, kwota_netto, stawka_vat, kwota_brutto, rezerwacja, file_name, page_number)
+
+current_page_number = 0
+
+for i, page in enumerate(pages[:len(file_names)]):
     if i >= len(file_names):
         continue
-    if i > 0:
+    if i > 0 and file_names[i] != file_names[i-1]:
+        current_page_number = 1
+    else:
+        current_page_number += 1
+    if is_korekta(page):
+        korekty.append([file_names[i], current_page_number])
+        print('korekta, ', 'plik: ', file_names[i], 'strona: ', current_page_number)
+    else:
         try:
-            if file_names[i] != file_names[i-1]:
-                current_page_number = 1
+            faktura = parse_page_data(page, file_names[i], current_page_number)
+            if faktura and faktura[0] not in [f[0] for f in faktury]:
+                faktury.append(faktura)
             else:
-                current_page_number += 1
-        except IndexError:
-            if i < num_pages:
-                print('IndexError at', i, ', file ', file_names[i-1], 'page', current_page_number)
-    try:
-        numer = re.search(fak_NUMER, page).group(1)
-        data_wystawienia = re.search(fak_DATA_WYSTAWIENIA, page).group(1)
-        termin_platnosci = re.search(fak_TERMIN_PLATNOSCI, page).group(1)
-        rezerwacja = re.search(fak_REZERWACJA, page).group(1)
-        kwoty = re.search(fak_KWOTY, page, re.DOTALL).group(1).replace(' ', '').replace('\n', ' ').replace('%', '% ').strip()
-        kw2 = [kwota for kwota in kwoty.split(' ') if kwota != '']
-        kwota_netto, stawka_vat, kwota_vat, kwota_brutto = kw2
-        kwota_netto = float(kwota_netto.replace(',', '.'))
-        kwota_brutto = float(kwota_brutto.replace(',', '.'))
-        rezerwacja = int(rezerwacja)
-        faktura = numer, data_wystawienia, termin_platnosci, kwota_netto, stawka_vat, kwota_brutto, rezerwacja, file_names[i], current_page_number
-        if rezerwacja not in [item[6] for item in faktury]:
-            faktury.append(faktura)
-    except AttributeError:
-        if i != num_pages:
-            print(i+1, 'error lub korekta', 'plik:', file_names[i], 'strona: ', current_page_number)
-            korekty.append([file_names[i], current_page_number])
-    except ValueError:
-        faktury.append(['check', 'check', 'check', 'check', 'check', 'check', 'check', file_names[i], current_page_number])
-        print('you need to check ' + file_names[i], 'page ' + str(current_page_number))
+                print('pominięto duplikat, ', faktura[0], 'plik: ', file_names[i], 'strona: ', current_page_number)
+        except (AttributeError, ValueError) as e:
+            if i != num_pages:
+                print('błąd - do sprawdzenia, plik: ', file_names[i], 'strona: ', current_page_number)
+            faktury.append(['błąd', 'błąd', 'błąd', 'błąd', 'błąd', 'błąd', 'błąd', file_names[i], current_page_number])
 
 
 if len(faktury) > 1:
@@ -76,12 +93,10 @@ if len(faktury) > 1:
     with pd.ExcelWriter('faktury_wakacje.xlsx', mode='w') as writer:
         fak.to_excel(writer, sheet_name='faktury', index=False, header=False)
         kor.to_excel(writer, sheet_name='korekty', index=False, header=False)
+
 columns = ['pdf_rez', 'pdf_nr_dok', 'pdf_data_dok', 'samo_start_date', 'samo_country', 'pdf_netto', 'pdf_brutto', 'pdf_termin', 'samo_date*', 'samo_adjustment*', 'pdf_st_vat', 'samo_rez', 'samo_com', 'samo_debt', 'diff']
-
-rows = []
-
-for row in faktury[1:]:
-    new_row = {
+rows = [ 
+    {
         'pdf_rez': row[6],
         'pdf_nr_dok': row[0],
         'pdf_data_dok': row[1],
@@ -98,11 +113,10 @@ for row in faktury[1:]:
         'samo_adjustment*': None,
         'diff': None
     }
-    rows.append(new_row)
+    for row in faktury[1:]
+]
 
-new_faktury = pd.DataFrame(rows)
-new_faktury = new_faktury[columns]
-
+new_faktury = pd.DataFrame(rows)[columns]
 with pd.ExcelWriter('faktury_wakacje.xlsx', mode='a', engine='openpyxl') as writer:
     new_faktury.to_excel(writer, sheet_name='analiza', index=False)
 
@@ -123,5 +137,4 @@ for col in ws.iter_cols(min_row=1, max_row=1, min_col=1, max_col=len(columns)):
             cell.fill = diff_fill
         
 wb.save('faktury_wakacje.xlsx')
-
 input('Press Enter to exit...')
