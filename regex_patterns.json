@@ -1,0 +1,10 @@
+{
+    "wakacje": 
+    {
+      "numer_faktury": "data i miejsce wystawienia\\n\\n(.*)\\n",
+      "data_faktury": "(\\d{4}-\\d{2}-\\d{2}) .*\\ndata i miejsce wystawienia",
+      "termin_platnosci": "Termin.*?(\\d{4}-\\d{2}-\\d{2}).*?Bank",
+      "kwoty": "W tym.*?Brutto(.*?)Razem do",
+      "rezerwacja": "Prowizja .* (1\\d{6})"
+    }
+}
