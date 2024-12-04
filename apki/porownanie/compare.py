@@ -1,5 +1,5 @@
 import pandas as pd
-from decimal import Decimal
+from decimal import Decimal, ROUND_HALF_UP
 
 def read_xlsx(file, how):
     df = pd.read_excel(file, header=0)
@@ -15,9 +15,9 @@ def read_xlsx(file, how):
         df1 = list(set(df1))
         df2 = list(set(df2))
 
-    elif how == 1:
-        df1 = [Decimal(i) for i in df1]
-        df2 = [Decimal(i) for i in df2]
+    elif how == '1':
+        df1 = [Decimal(i).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP) for i in df1]
+        df2 = [Decimal(i).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP) for i in df2]
     
     return headers, df1, df2
 
@@ -32,14 +32,13 @@ def match_lists(list1, list2):
             unmatched_list1.remove(i)
             unmatched_list2.remove(i)
     
-    
     return matches, unmatched_list1, unmatched_list2
 
 def save_to_excel(headers, exact_matches, unmatched_list1, unmatched_list2):
     df_exact = pd.DataFrame(exact_matches, columns=headers)
     unmatched_data = {headers[0]: unmatched_list1 + [None] * (len(unmatched_list2) - len(unmatched_list1)),
                       headers[1]: unmatched_list2 + [None] * (len(unmatched_list1) - len(unmatched_list2))}
-    df_unmatched =pd. DataFrame(unmatched_data)
+    df_unmatched = pd.DataFrame(unmatched_data)
 
     with pd.ExcelWriter('comparison_output.xlsx') as writer:
         df_exact.to_excel(writer, sheet_name='Exact Matches', index=False)
@@ -56,11 +55,7 @@ def main():
     headers, list1, list2 = read_xlsx(file, how)
 
     exact_matches, unmatched_list1, unmatched_list2 = match_lists(list1, list2)
-
     save_to_excel(headers, exact_matches, unmatched_list1, unmatched_list2)
 
-    print('Comparison results saved to comparison_output.xlsx')
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
