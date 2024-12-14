@@ -14,7 +14,7 @@
       "termin_platnosci": "Razem do zapłaty\\n\\n.*?\\n(.*)\\n",
       "netvat": "Wartość netto Wartość VAT\\n(.*)\\n\\n(.*)\\n",
       "brutto": "\\n(.*)\\n\\nForma płatności:",
-      "stawka": "Stawka\\nVAT\\n(.*?)\\n\\nRazem",
+      "stawka": "\\n(\\d+\\w*)%\\n",
       "termin": "Razem do zapłaty:\\n\\n.*?\\n(.*)\\n",
       "rezerwacja": "rez.: (\\d{7})"
     }
