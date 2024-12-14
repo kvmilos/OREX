@@ -13,7 +13,7 @@
       "data_faktury": "Data wykonania usługi\\n\\n(.*)\\n",
       "termin_platnosci": "Razem do zapłaty\\n\\n.*?\\n(.*)\\n",
       "netvat": "Wartość netto Wartość VAT\\n(.*)\\n\\n(.*)\\n",
-      "brutto": "Wartość\\nbrutto\\n(.*)\\n",
+      "brutto": "Wartość\\nbrutto\\n(.*?)\\n",
       "stawka": "\\n(\\d+\\w*)%\\n",
       "termin": "Razem do zapłaty:\\n\\n.*?\\n(.*)\\n",
       "rezerwacja": "rez.: (\\d{7})"
