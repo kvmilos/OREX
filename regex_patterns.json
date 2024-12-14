@@ -6,5 +6,15 @@
       "termin_platnosci": "Termin.*?(\\d{4}-\\d{2}-\\d{2}).*?Bank",
       "kwoty": "W tym.*?Brutto(.*?)Razem do",
       "rezerwacja": "Prowizja .* (1\\d{6})"
+    },
+    "wakacje_new":
+    {
+      "numer_faktury": "Numer\\n(.*)\\n",
+      "data_faktury": "Data wykonania usługi\\n(.*)\\n",
+      "termin_platnosci": "Razem do zapłaty\\n\\n.*?\\n(.*)\\n",
+      "netvat": "Wartość netto Wartość VAT\\n(.*)\\n\\n(.*)\\n",
+      "brutto": "\\n(.*)\\n\\nForma płatności:",
+      "stawka": "Stawka\\nVAT\\n(.*)\\n\\nRazem",
+      "termin": "Razem do zapłaty:\\n\\n.*?\\n(.*)\\n"
     }
 }
