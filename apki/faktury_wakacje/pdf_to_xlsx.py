@@ -1,140 +1,112 @@
-import os
-import re
-import pdfminer
-import pdfminer.high_level
-from pdfminer.high_level import extract_pages
-import pandas as pd
-from openpyxl import load_workbook
-from openpyxl.styles import PatternFill
-import requests
-import json
+from os import path, makedirs, rename, listdir
+from re import search, finditer
+from pdfminer.high_level import extract_text
+from pandas import DataFrame, ExcelWriter
+from requests import get
+from json import loads
 
 def fetch_patterns():
     url = "https://raw.githubusercontent.com/kvmilos/OREX/refs/heads/main/regex_patterns.json"
-    response = requests.get(url)
+    response = get(url)
     if response.status_code == 200:
-        return json.loads(response.text)
+        return loads(response.text)
     else:
-        print("Nie udało się pobrać wzorców.")
+        print("An error occurred while fetching patterns.")
         return None
 
 patterns = fetch_patterns()
 if patterns is None:
-    print("Nie udało się pobrać wzorców.")
+    print("An error occurred while fetching patterns.")
     exit(1)
 
-fak_NUMER = patterns["wakacje"]["numer_faktury"]
-fak_DATA_WYSTAWIENIA = patterns["wakacje"]["data_faktury"]
-fak_TERMIN_PLATNOSCI = patterns["wakacje"]["termin_platnosci"]
-fak_KWOTY = patterns["wakacje"]["kwoty"]
-fak_REZERWACJA = patterns["wakacje"]["rezerwacja"]
+makedirs('done', exist_ok=True)
+faktury = [['numer', 'data_wystawienia', 'termin_platnosci', 'netto', 'kw_vat', 'brutto', 'st_vat', 'rezerwacja', 'plik']]
+bledy = [['plik', 'opis']]
+DEBUG = False  # Enable debug mode for detailed output
 
-os.makedirs('done', exist_ok=True)
+regex_keys = ["numer_faktury", "data_faktury", "termin", "netvat", "brutto", "stawka", "rezerwacja"]
+try:
+    fak_NUMER = patterns["wakacje_new"]["numer_faktury"]
+    fak_DATA_WYSTAWIENIA = patterns["wakacje_new"]["data_faktury"]
+    fak_TERMIN_PLATNOSCI = patterns["wakacje_new"]["termin"]
+    fak_NETVAT = patterns["wakacje_new"]["netvat"]
+    fak_BRUTTO = patterns["wakacje_new"]["brutto"]
+    fak_STAWKA = patterns["wakacje_new"]["stawka"]
+    fak_REZERWACJA = patterns["wakacje_new"]["rezerwacja"]
+except KeyError as e:
+    print(f"Missing key in patterns: {e}")
+    exit(1)
 
-faktury = [['numer', 'data_wystawienia', 'termin_platnosci', 'kwota_netto', 'stawka_vat', 'kwota_brutto', 'rez', 'plik', 'strona']]
-korekty = [['plik', 'strona']]
-num_pages = 0
-text = ''
-file_names = []
+def convert_to_float(value):
+    """Converts a string number with commas or spaces into a float."""
+    value = value.replace(' ', '').replace('\xa0', '').replace(',', '.')
+    return float(value)
 
-for file in os.listdir('.'):
-    if file.endswith('.pdf'):
-        with open(file, 'rb') as f:
-            text += pdfminer.high_level.extract_text(f)
-        current_num_pages = len(list(extract_pages(file)))
-        num_pages += current_num_pages
-        file_names.extend([file] * current_num_pages)
-        os.rename(file, os.path.join('done', file))
+def blad(text, file_name):
+    # Check each regex pattern and provide detailed output on failure
+    missing_patterns = []
+    if not search(fak_NUMER, text):
+        missing_patterns.append("fak_NUMER")
+    if not search(fak_DATA_WYSTAWIENIA, text):
+        missing_patterns.append("fak_DATA_WYSTAWIENIA")
+    if not search(fak_TERMIN_PLATNOSCI, text):
+        missing_patterns.append("fak_TERMIN_PLATNOSCI")
+    if not search(fak_REZERWACJA, text):
+        missing_patterns.append("fak_REZERWACJA")
+    if not search(fak_NETVAT, text):
+        missing_patterns.append("fak_NETVAT")
+    if not search(fak_BRUTTO, text):
+        missing_patterns.append("fak_BRUTTO")
+    if not search(fak_STAWKA, text):
+        missing_patterns.append("fak_STAWKA")
 
-pages = text.split('\x0c')
+    if missing_patterns:
+        if DEBUG:
+            print(f"[DEBUG] Missing patterns in file '{file_name}': {', '.join(missing_patterns)}")
+        return missing_patterns
+    return []
 
-def is_korekta(page_text):
-    return not (re.search(fak_NUMER, page_text) and re.search(fak_DATA_WYSTAWIENIA, page_text) and 
-                re.search(fak_TERMIN_PLATNOSCI, page_text) and re.search(fak_REZERWACJA, page_text))
+def parse_page_data(text, file_name):
+    numer = search(fak_NUMER, text).group(1)
+    data_wystawienia = search(fak_DATA_WYSTAWIENIA, text).group(1)
+    termin_platnosci = search(fak_TERMIN_PLATNOSCI, text).group(1)
+    
+    netto = convert_to_float(search(fak_NETVAT, text).group(1))
+    vat = convert_to_float(search(fak_NETVAT, text).group(2))
+    brutto = convert_to_float(list(finditer(fak_BRUTTO, text))[-1].group(1))
+    
+    stawka = list(finditer(fak_STAWKA, text))[-1].group(1)
+    rezerwacja = int(search(fak_REZERWACJA, text).group(1))
+    
+    return [numer, data_wystawienia, termin_platnosci, vat, netto, brutto, stawka + '%', rezerwacja, file_name]
 
-def parse_page_data(page_text, file_name, page_number):
-    numer = re.search(fak_NUMER, page_text).group(1)
-    data_wystawienia = re.search(fak_DATA_WYSTAWIENIA, page_text).group(1)
-    termin_platnosci = re.search(fak_TERMIN_PLATNOSCI, page_text).group(1)
-    rezerwacja = int(re.search(fak_REZERWACJA, page_text).group(1))
-    kwoty = re.search(fak_KWOTY, page_text, re.DOTALL).group(1).replace(' ', '').replace('\n', ' ').replace('%', '% ').strip()
-    kwota_netto, stawka_vat, _, kwota_brutto = [float(kw.replace(',', '.')) if i != 1 else kw for i, kw in enumerate(kwoty.split())]
-
-    return (numer, data_wystawienia, termin_platnosci, kwota_netto, stawka_vat, kwota_brutto, rezerwacja, file_name, page_number)
-
-current_page_number = 0
-
-for i, page in enumerate(pages[:len(file_names)]):
-    if i >= len(file_names):
+for file in listdir('.'):
+    if not file.endswith('.pdf'):
         continue
-    if i > 0 and file_names[i] != file_names[i-1]:
-        current_page_number = 1
-    else:
-        current_page_number += 1
-    if is_korekta(page):
-        korekty.append([file_names[i], current_page_number])
-        print('korekta, ', 'plik: ', file_names[i], 'strona: ', current_page_number)
-    else:
-        try:
-            faktura = parse_page_data(page, file_names[i], current_page_number)
-            if faktura and faktura[0] not in [f[0] for f in faktury]:
-                faktury.append(faktura)
-            else:
-                print('pominięto duplikat, ', faktura[0], 'plik: ', file_names[i], 'strona: ', current_page_number)
-        except (AttributeError, ValueError) as e:
-            if i != num_pages:
-                print('błąd - do sprawdzenia, plik: ', file_names[i], 'strona: ', current_page_number)
-            faktury.append(['błąd', 'błąd', 'błąd', 'błąd', 'błąd', 'błąd', 'błąd', file_names[i], current_page_number])
-
-
-if len(faktury) > 1:
-    fak = pd.DataFrame(faktury)
-    kor = pd.DataFrame(korekty)
-    with pd.ExcelWriter('faktury_wakacje.xlsx', mode='w') as writer:
-        fak.to_excel(writer, sheet_name='faktury', index=False, header=False)
-        kor.to_excel(writer, sheet_name='korekty', index=False, header=False)
-
-columns = ['pdf_rez', 'pdf_nr_dok', 'pdf_data_dok', 'samo_start_date', 'samo_country', 'pdf_netto', 'pdf_brutto', 'pdf_termin', 'samo_date*', 'samo_adjustment*', 'pdf_st_vat', 'samo_rez', 'samo_com', 'samo_debt', 'diff']
-rows = [ 
-    {
-        'pdf_rez': row[6],
-        'pdf_nr_dok': row[0],
-        'pdf_data_dok': row[1],
-        'pdf_netto': row[3],
-        'pdf_brutto': row[5],
-        'pdf_st_vat': row[4],
-        'pdf_termin': row[2],
-        'samo_start_date': None,
-        'samo_country': None,
-        'samo_rez': None,
-        'samo_com': None,
-        'samo_debt': None,
-        'samo_date*': None,
-        'samo_adjustment*': None,
-        'diff': None
-    }
-    for row in faktury[1:]
-]
-
-new_faktury = pd.DataFrame(rows)[columns]
-with pd.ExcelWriter('faktury_wakacje.xlsx', mode='a', engine='openpyxl') as writer:
-    new_faktury.to_excel(writer, sheet_name='analiza', index=False)
-
-wb = load_workbook('faktury_wakacje.xlsx')
-ws = wb['analiza']
-
-pdf_fill = PatternFill(start_color='ADD8E6', end_color='ADD8E6', fill_type='solid')
-samo_fill = PatternFill(start_color='FFA07A', end_color='FFA07A', fill_type='solid')
-diff_fill = PatternFill(start_color='DDA0DD', end_color='DDA0DD', fill_type='solid')
-
-for col in ws.iter_cols(min_row=1, max_row=1, min_col=1, max_col=len(columns)):
-    for cell in col:
-        if cell.value.startswith('pdf'):
-            cell.fill = pdf_fill
-        elif cell.value.startswith('samo'):
-            cell.fill = samo_fill
-        elif cell.value == 'diff':
-            cell.fill = diff_fill
+    
+    try:
+        with open(file, 'rb') as f:
+            text = extract_text(f)
         
-wb.save('faktury_wakacje.xlsx')
-input('Press Enter to exit...')
+        missing_patterns = blad(text, file)
+        if missing_patterns:
+            bledy.append([file, ', '.join(missing_patterns)])
+            print(f"Błąd w pliku {file}")
+        else:
+            faktury.append(parse_page_data(text, file))
+        
+        rename(file, path.join('done', file))
+    except Exception as e:
+        print(f"Błąd w pliku {file}: {e}")
+        if DEBUG:
+            import traceback
+            traceback.print_exc()
+
+if len(faktury) > 0:
+    fak = DataFrame(faktury)
+    bl = DataFrame(bledy)
+    with ExcelWriter('wakacje_pdfy.xlsx', mode='w') as writer:
+        fak.to_excel(writer, sheet_name='faktury', index=False, header=False)
+        bl.to_excel(writer, sheet_name='bledy', index=False, header=False)
+
+input('Gotowe! Naciśnij Enter aby zamknąć.')
