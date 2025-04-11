@@ -250,7 +250,7 @@ def save_transactions(file_name, transactions):
     transactions['saldo pln'] = pd.to_numeric(transactions['saldo pln'], errors='coerce')
     transactions['saldo pln'] = round(transactions['saldo pln'] / 100, 2)
     transactions['kwota_pln'] = pd.to_numeric(transactions['kwota_pln'], errors='coerce')
-    transactions['kwota_pln'] = round(transactions['kwota_pln'] / 100, 2)
+    transactions['kwota_pln'] = round(-transactions['kwota_pln'] / 100, 2)
     
     # Write data to the worksheet
     for r_idx, row in enumerate(dataframe_to_rows(transactions, index=False, header=True), start=1):
@@ -397,7 +397,12 @@ def manual_bnp(row, balances, split_rows):
     elif row['data'] == datetime.date(2025, 2, 20) and row['kwota'] == 200000:
         row['kurs'] = '4,1798 (z USD)'
         balances.append((200000, 4.1798))
+    elif row['data'] == datetime.date(2025, 4, 9) and row['kwota'] == 13500000:
+        row['kurs'] = '4,2124 (z USD)'
+        balances.append((13500000, 4.2124))
+    else:
         row['kurs'] = '????'
+
     return row, balances, split_rows
 
 
@@ -584,7 +589,7 @@ def save_transactions_bnp(file_name, transactions):
     transactions['saldo'] = round(transactions['saldo'] / 100, 2)
     transactions['saldo pln'] = round(transactions['saldo pln'] / 100, 2)
     transactions['kwota_pln'] = pd.to_numeric(transactions['kwota_pln'], errors='coerce')
-    transactions['kwota_pln'] = round(transactions['kwota_pln'] / 100, 2)
+    transactions['kwota_pln'] = round(-transactions['kwota_pln'] / 100, 2)
     
     # Write data to the worksheet
     for r_idx, row in enumerate(dataframe_to_rows(transactions, index=False, header=True), start=1):
