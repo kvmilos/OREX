@@ -13,3 +13,10 @@ __pycache__
 *.yml
 *.ini
 *.eml
+*.spec
+*.toc
+*.zip
+*.pyc
+*.pyz
+*.html
+*.pkg
