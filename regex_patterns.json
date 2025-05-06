@@ -17,5 +17,27 @@
       "stawka": "\\n(\\d+\\w*)%\\n",
       "termin": "Razem do zapłaty:\\n\\n.*?\\n(.*)\\n",
       "rezerwacja": "rez.: (\\d{7})"
+    },
+    "accounts":
+    {
+      "2248": "BC 001 - BNP 2248",
+      "1123": "BC 003 - BNP 1123",
+      "5899": "BC 004 - BNP 5899",
+      "1107": "BC 005 - BNP 1107",
+      "0007": "BC 022 - BNP 0007",
+      "0006": "BC 023 - BNP 0006",
+      "0004": "BC 024 - BNP 0004",
+      "2475": "BC 002 - Santander 2475",
+      "2497": "BC 006 - Santander 2497",
+      "2516": "BC 007 - Santander 2516",
+      "0668": "BC 009 - Santander 0668",
+      "5898": "BC 010 - Santander 5898",
+      "7200": "BC 011 - Santander 7200",
+      "0460": "BC 012 - Santander 0460",
+      "2474": "BC 013 - Santander 2474",
+      "6916": "BC 018 - Santander 6916",
+      "5195": "BC 019 - Santander 5195",
+      "0002": "BC 020 - Santander 0002",
+      "7548": "BC 025 - Santander 7548"
     }
 }
